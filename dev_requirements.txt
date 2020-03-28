@@ -1,0 +1,6 @@
+djangorestframework-stubs
+pylint
+pylint-django
+pytest-cov
+pytest-django
+pytest-xdist
