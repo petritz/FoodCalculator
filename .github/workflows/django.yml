@@ -63,6 +63,6 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: pytest-coverage-results-${{ matrix.python-version }}
-        path: htmlcov/*
+        path: htmlcov
       # Use always() to always run this step to publish test results when there are test failures
       if: always()
