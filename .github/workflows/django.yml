@@ -35,9 +35,9 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ steps.pip-cache.outputs.dir }}
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        key: ${{ matrix.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
-          ${{ runner.os }}-pip-
+          ${{ matrix.os }}-pip-
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
@@ -51,12 +51,12 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --statistics
     - name: Test with pytest
       run: |
-        pytest --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml --cov='.' --cov-report=html --cov-report=term
+        pytest --doctest-modules --junitxml=junit/test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml --cov='.' --cov-report=html --cov-report=term
     - name: Upload pytest test results
       uses: actions/upload-artifact@master
       with:
-        name: pytest-results-${{ matrix.python-version }}
-        path: junit/test-results-${{ matrix.python-version }}.xml
+        name: pytest-results-${{ matrix.os }}-${{ matrix.python-version }}
+        path: junit/test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml
       # Use always() to always run this step to publish test results when there are test failures
       if: always()
     - name: Upload coverage test results
