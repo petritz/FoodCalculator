@@ -95,6 +95,7 @@ class BillaWebScraper(WebScraper):
                 weight *= 1000
 
             if "milch" in str(info_decoded['name']).lower():
+                # Buttermilk only has a density of 0.92
                 weight *= Decimal('1.03')
             elif "öl" in str(info_decoded['name']).lower():
                 weight *= Decimal('0.8')
