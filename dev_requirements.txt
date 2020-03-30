@@ -1,6 +1,8 @@
 djangorestframework-stubs
 pylint
 pylint-django
+pytest
 pytest-cov
 pytest-django
 pytest-xdist
+flake8
