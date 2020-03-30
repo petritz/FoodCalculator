@@ -1,6 +1,6 @@
 from django.contrib import admin
 
 # Register your models here.
-from food_calc.server.models import Ingredient
+from food_calc.server.models import Product
 
-admin.site.register(Ingredient)
+admin.site.register(Product)

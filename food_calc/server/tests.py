@@ -14,11 +14,11 @@ class BillaWebScrapingTestCase(TestCase):
 
   def test_can_process(self):
     for product in self.products:
-      ingredient = self.scraper.scrape_product(product)
-      self.assertIsNotNone(ingredient.name)
-      self.assertIsNotNone(ingredient.calories)
-      self.assertIsNotNone(ingredient.macro_fat)
-      self.assertIsNotNone(ingredient.macro_carbohydrates)
-      self.assertIsNotNone(ingredient.macro_protein)
-      ingredient.save()
+      product = self.scraper.scrape_product(product)
+      self.assertIsNotNone(product.name)
+      self.assertIsNotNone(product.calories)
+      self.assertIsNotNone(product.nutrition_fat)
+      self.assertIsNotNone(product.nutrition_carbohydrates)
+      self.assertIsNotNone(product.nutrition_protein)
+      product.save()
 

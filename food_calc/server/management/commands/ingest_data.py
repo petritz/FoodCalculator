@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandParser
 
-from food_calc.server.models import Ingredient
+from food_calc.server.models import Product
 from food_calc.server.util.scraper import BillaWebScraper
 
 

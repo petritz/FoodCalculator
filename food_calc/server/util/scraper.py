@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from food_calc.server.models import Ingredient
+from food_calc.server.models import Product
 import requests
 import json
 
@@ -9,7 +9,7 @@ class WebScraper:
   def get_name(self):
     raise NotImplementedError()
 
-  def scrape_product(self, item_number: str) -> Ingredient:
+  def scrape_product(self, item_number: str) -> Product:
     raise NotImplementedError()
 
 
@@ -19,8 +19,8 @@ class BillaWebScraper(WebScraper):
   def get_name(self):
     return 'billa'
 
-  def scrape_product(self, item_number: str) -> Ingredient:
-    ingredient = Ingredient()
+  def scrape_product(self, item_number: str) -> Product:
+    ingredient = Product()
     ingredient.item_number = item_number
     ingredient.shop = self.get_name()
 
@@ -64,18 +64,25 @@ class BillaWebScraper(WebScraper):
       for item in info_decoded['nutritions']:
         if item['unit'] == 'Gramm' and item['relationValue'] == 100 and len(nutrition) == 0:
           for nutri in item['nutritions']:
-            if nutri['unit'] == 'Kilokalorie' or nutri['unit'] == 'Gramm':
+            if nutri['unit'] == 'Kilokalorie' or nutri['unit'] == 'Gramm' or nutri['unit'] == 'Milligramm':
               nutrition[nutri['nutritionName']] = Decimal(str(nutri['nutritionalValue']))
+              if nutri['unit'] == 'Milligramm':
+                nutrition[nutri['nutritionName']] /= 1000
 
       ingredient.name = brand + " " + info_decoded['name']
       if price is not None and weight != 0:
         ingredient.price = (price / weight) * 100  # price per 100g
-      ingredient.calories = nutrition['Energie']
-      ingredient.macro_fat = nutrition['Fett']
-      ingredient.macro_fatty_acids = nutrition['   davon gesättigte Fettsäuren']
-      ingredient.macro_carbohydrates = nutrition['Kohlenhydrate']
-      ingredient.macro_sugar = nutrition['   davon Zucker']
-      ingredient.macro_protein = nutrition['Eiweiß']
-      ingredient.macro_salt = nutrition['Salz']
+      ingredient.calories = nutrition.get('Energie')
+      ingredient.nutrition_fat = nutrition.get('Fett')
+      ingredient.nutrition_saturated_fatty_acids = nutrition.get('   davon gesättigte Fettsäuren')
+      ingredient.nutrition_carbohydrates = nutrition.get('Kohlenhydrate')
+      ingredient.nutrition_sugar = nutrition.get('   davon Zucker')
+      ingredient.nutrition_protein = nutrition.get('Eiweiß')
+      ingredient.nutrition_salt = nutrition.get('Salz')
+      ingredient.nutrition_fiber = nutrition.get('Ballaststoffe')
+      ingredient.nutrition_mono_unsaturated_fatty_acids = nutrition.get('   davon einfach ungesättigte Fettsäuren')
+      ingredient.nutrition_poly_unsaturated_fatty_acids = nutrition.get('   davon mehrfach ungesättigte Fettsäuren')
+      ingredient.nutrition_calcium = nutrition.get('Kalzium')
+      ingredient.nutrition_calcium = nutrition.get('Natrium')
 
     return ingredient
