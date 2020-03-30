@@ -1,0 +1,81 @@
+from decimal import Decimal
+
+from food_calc.server.models import Ingredient
+import requests
+import json
+
+
+class WebScraper:
+  def get_name(self):
+    raise NotImplementedError()
+
+  def scrape_product(self, item_number: str) -> Ingredient:
+    raise NotImplementedError()
+
+
+class BillaWebScraper(WebScraper):
+  api_url = 'https://www.billa.at/api/articles/'
+
+  def get_name(self):
+    return 'billa'
+
+  def scrape_product(self, item_number: str) -> Ingredient:
+    ingredient = Ingredient()
+    ingredient.item_number = item_number
+    ingredient.shop = self.get_name()
+
+    price = None
+    brand = ''
+    base_response = requests.get(self.api_url + item_number + "?includeDetails=true")
+    if base_response.status_code == 200:
+      # Can be non-200 if item is not currently available
+      base_decoded = json.loads(base_response.text)
+      price = Decimal(str(base_decoded['price']['final']))
+      brand = base_decoded['brand']
+
+    info_response = requests.get(self.api_url + item_number + "/infos")
+    if info_response.status_code == 200:
+      info_decoded = json.loads(info_response.text)[-1]
+
+      # Weight in gramm
+      weight = 0
+      for item in info_decoded['measurements']:
+        if item['type'] == 'Nettogehalt':
+          if item['unit'] == 'Gramm':
+            weight = Decimal(str(item['value']))
+          elif item['unit'] == 'Kilogramm':
+            weight = Decimal(str(item['value'])) * 1000
+          elif item['unit'] == 'Liter' or item['unit'] == 'Milliliter':
+            # Assuming water
+            weight = Decimal(str(item['value']))
+            if item['unit'] == 'Liter':
+              weight *= 1000
+
+            if "Milch" in str(info_decoded['name']):
+              weight *= 1.03
+            elif "Öl" in str(info_decoded['name']):
+              weight *= 0.8
+          elif item['unit'] == 'Stueck':
+            portion = [x for x in info_decoded['measurements'] if x['type'] == 'Portionsgroesse']
+            if portion:
+              weight = Decimal(str(portion[0]['value'])) * Decimal(str(item['value']))
+
+      nutrition = {}
+      for item in info_decoded['nutritions']:
+        if item['unit'] == 'Gramm' and item['relationValue'] == 100 and len(nutrition) == 0:
+          for nutri in item['nutritions']:
+            if nutri['unit'] == 'Kilokalorie' or nutri['unit'] == 'Gramm':
+              nutrition[nutri['nutritionName']] = Decimal(str(nutri['nutritionalValue']))
+
+      ingredient.name = brand + " " + info_decoded['name']
+      if price is not None and weight != 0:
+        ingredient.price = (price / weight) * 100  # price per 100g
+      ingredient.calories = nutrition['Energie']
+      ingredient.macro_fat = nutrition['Fett']
+      ingredient.macro_fatty_acids = nutrition['   davon gesättigte Fettsäuren']
+      ingredient.macro_carbohydrates = nutrition['Kohlenhydrate']
+      ingredient.macro_sugar = nutrition['   davon Zucker']
+      ingredient.macro_protein = nutrition['Eiweiß']
+      ingredient.macro_salt = nutrition['Salz']
+
+    return ingredient
