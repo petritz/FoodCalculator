@@ -19,6 +19,12 @@ class BillaWebScraper(WebScraper):
     def get_name(self):
         return 'billa'
 
+    def get_base_info_url(self, item_number):
+        return self.api_url + item_number + "?includeDetails=true"
+
+    def get_info_url(self, item_number):
+        return self.api_url + item_number + "/infos"
+
     def scrape_product(self, item_number: str) -> Product:
         ingredient = Product()
         ingredient.item_number = item_number
@@ -26,14 +32,14 @@ class BillaWebScraper(WebScraper):
 
         price = None
         brand = ''
-        base_response = requests.get(self.api_url + item_number + "?includeDetails=true")
+        base_response = requests.get(self.get_base_info_url(item_number))
         if base_response.status_code == 200:
             # Can be non-200 if item is not currently available
             base_decoded = json.loads(base_response.text)
             price = Decimal(str(base_decoded['price']['final']))
             brand = base_decoded['brand']
 
-        info_response = requests.get(self.api_url + item_number + "/infos")
+        info_response = requests.get(self.get_info_url(item_number))
         if info_response.status_code == 200:
             info_decoded = json.loads(info_response.text)[-1]
 
@@ -88,10 +94,10 @@ class BillaWebScraper(WebScraper):
             if item['unit'] == 'Liter':
                 weight *= 1000
 
-            if "Milch" in str(info_decoded['name']):
-                weight *= 1.03
-            elif "Öl" in str(info_decoded['name']):
-                weight *= 0.8
+            if "milch" in str(info_decoded['name']).lower():
+                weight *= Decimal('1.03')
+            elif "öl" in str(info_decoded['name']).lower():
+                weight *= Decimal('0.8')
         elif item['unit'] == 'Stueck':
             portion = [x for x in info_decoded['measurements'] if x['type'] == 'Portionsgroesse']
             if portion:

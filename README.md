@@ -1,4 +1,6 @@
 # FoodCalculator
+![Django CI](https://github.com/petritz/food-calculator/workflows/Django%20CI/badge.svg)
+
 Calculate price, calories, etc of recipes
 
 ## Setup
