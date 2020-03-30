@@ -51,9 +51,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --statistics
     - name: Test with pytest
       run: |
-        pip install pytest
-        pip install pytest-cov
-        pytest tests.py --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml --cov='.' --cov-report=html --cov-report=term
+        pytest --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml --cov='.' --cov-report=html --cov-report=term
     - name: Upload pytest test results
       uses: actions/upload-artifact@master
       with:
