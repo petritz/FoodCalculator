@@ -36,7 +36,7 @@ class Product(models.Model):
     nutrition_fiber = models.DecimalField(max_digits=5, decimal_places=2, default=0, null=True)
     nutrition_mono_unsaturated_fatty_acids = models.DecimalField(max_digits=5, decimal_places=2, default=0, null=True)
     nutrition_poly_unsaturated_fatty_acids = models.DecimalField(max_digits=5, decimal_places=2, default=0, null=True)
-    nutrition_calcium = models.DecimalField(max_digits=7, decimal_places=4, default=0, null=True),
+    nutrition_calcium = models.DecimalField(max_digits=7, decimal_places=4, default=0, null=True)
     nutrition_natrium = models.DecimalField(max_digits=7, decimal_places=4, default=0, null=True)
 
     def __str__(self):
