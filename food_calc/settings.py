@@ -128,7 +128,7 @@ REST_FRAMEWORK = {
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:8080',
-    'https://petritz.github.io/food-calculator-web/'
+    'https://petritz.github.io'
 ]
 
 # Activate Django-Heroku.
