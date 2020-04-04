@@ -63,7 +63,7 @@ class BillaWebScraper(WebScraper):
             ingredient.nutrition_mono_unsaturated_fatty_acids = nutrition.get('   davon einfach ungesättigte Fettsäuren')
             ingredient.nutrition_poly_unsaturated_fatty_acids = nutrition.get('   davon mehrfach ungesättigte Fettsäuren')
             ingredient.nutrition_calcium = nutrition.get('Kalzium')
-            ingredient.nutrition_calcium = nutrition.get('Natrium')
+            ingredient.nutrition_natrium = nutrition.get('Natrium')
 
         return ingredient
 
