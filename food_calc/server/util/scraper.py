@@ -34,6 +34,7 @@ class BillaWebScraper(WebScraper):
         brand = ''
         base_response = requests.get(self.get_base_info_url(item_number))
         if base_response.status_code == 200:
+            # TODO: save response in file
             # Can be non-200 if item is not currently available
             base_decoded = json.loads(base_response.text)
             price = Decimal(str(base_decoded['price']['final']))
@@ -41,6 +42,7 @@ class BillaWebScraper(WebScraper):
 
         info_response = requests.get(self.get_info_url(item_number))
         if info_response.status_code == 200:
+            # TODO: save response in file
             info_decoded = json.loads(info_response.text)[-1]
 
             # Weight in gramm
